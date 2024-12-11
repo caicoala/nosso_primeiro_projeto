@@ -11,6 +11,16 @@ class InitialScreen extends StatefulWidget {
 
 class _InitialScreenState extends State<InitialScreen> {
   double nivelGlobal = 0.0;
+  double nivelGlobalMaximo = 0.0;
+
+  double getGlobalLevel(){
+    nivelGlobal = 0.0;
+    TaskInherited.of(context).taskList.forEach((task){
+      nivelGlobal = nivelGlobal + (task.dificuldade * ((task.nivel + (task.maestria * task.nivelMaximo))) / 10);
+      nivelGlobalMaximo += task.dificuldade * 10;
+    });
+    return nivelGlobal;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,35 +29,27 @@ class _InitialScreenState extends State<InitialScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Column(children: [
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               const Row(
                 children: [
-                  const Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: 200,
-                        child: Text('Tarefas',
-                            style: TextStyle(color: Colors.white, fontSize: 20)),
-                      ),
-                    ],
-                  ),
+                  Text('Tarefas',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                      textAlign: TextAlign.start),
                 ],
               ),
               Row(
                 children: [
-                   SizedBox(
+                  SizedBox(
                     width: 200,
                     child: LinearProgressIndicator(
                         color: Colors.white,
-                        value: nivelGlobal/10,
+                        value: nivelGlobalMaximo > 0 ? nivelGlobal / nivelGlobalMaximo : 1,
                         backgroundColor: Colors.white38),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Text(
-                      'Level $nivelGlobal',
+                      'Level ${nivelGlobal.toStringAsFixed(2)}',
                       style: const TextStyle(color: Colors.white54),
                     ),
                   ),
@@ -59,10 +61,10 @@ class _InitialScreenState extends State<InitialScreen> {
                 IconButton(
                   onPressed: () {
                     setState(() {
-                      nivelGlobal++;
+                      nivelGlobal = getGlobalLevel();
                     });
                   },
-                  icon: Icon(Icons.autorenew_outlined),
+                  icon: const Icon(Icons.autorenew_outlined),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromRGBO(47, 128, 237, 1),
                     // Cor de fundo

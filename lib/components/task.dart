@@ -5,18 +5,19 @@ class Task extends StatefulWidget {
   final String nome;
   final String foto;
   final int dificuldade;
+  int maestria = 0;
 
   Task(this.nome, this.foto, this.dificuldade, {super.key});
 
   int nivel = 0;
+  int nivelMaximo = 0;
+
   @override
   State<Task> createState() => _TaskState();
 }
 
 class _TaskState extends State<Task> {
   Color? containerProgressBarColor = Colors.yellow;
-  int nivelMaximo = 0;
-  int maestria = 0;
 
   bool assetOrNetwork() {
     return !widget.foto.contains('http');
@@ -24,7 +25,7 @@ class _TaskState extends State<Task> {
 
   @override
   Widget build(BuildContext context) {
-    nivelMaximo = widget.dificuldade * 10;
+    widget.nivelMaximo = widget.dificuldade * 10;
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -84,12 +85,12 @@ class _TaskState extends State<Task> {
                       child: ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            if (widget.nivel == nivelMaximo) {
+                            if (widget.nivel == widget.nivelMaximo) {
                               widget.nivel = 0;
-                              maestria++;
+                              widget.maestria++;
                               containerProgressBarColor =
                                   ColorContainerProgressBar.values
-                                          .where((x) => x.code == maestria)
+                                          .where((x) => x.code == widget.maestria)
                                           .first
                                           .color ??
                                       Colors.yellow;
@@ -126,7 +127,7 @@ class _TaskState extends State<Task> {
                       width: 200,
                       child: LinearProgressIndicator(
                           color: Colors.white,
-                          value: nivelMaximo > 0 ? widget.nivel / nivelMaximo : 1,
+                          value: widget.nivelMaximo > 0 ? widget.nivel / widget.nivelMaximo : 1,
                           backgroundColor: Colors.white38),
                     ),
                   ),
